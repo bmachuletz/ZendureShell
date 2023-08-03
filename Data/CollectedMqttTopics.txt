@@ -1,0 +1,168 @@
+Topic: [DeveloperId]/[DeviceId]/state
+{
+  "outputHomePower": 175,
+  "outputPackPower": 0,
+  "solarInputPower": 113,
+  "electricLevel": 15,
+  "packState": 2,
+  "packNum": 3,
+  "masterSwitch": true,
+  "wifiState": true,
+  "packInputPower": 65,
+  "outputLimit": 200,
+  "buzzerSwitch": true,
+  "socSet": 1000,
+  "inputLimit": 0,
+  "hubState": 0,
+  "remainInputTime": 59940,
+  "remainOutTime": 600,
+  "inverseMaxPower": 900
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/switch/device/[DeviceId]masterSwitch/config
+{
+  "unique_id": "[DeviceId]masterSwitch",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "state_off": false,
+  "command_topic": "[DeveloperId]/[DeviceId]/masterSwitch/set",
+  "name": "masterSwitch",
+  "device_class": "switch",
+  "value_template": "{{ value_json.masterSwitch}}",
+  "payload_on": true,
+  "payload_off": false,
+  "state_on": true
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/switch/device/[DeviceId]buzzerSwitch/config
+{
+  "unique_id": "[DeviceId]buzzerSwitch",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "state_off": false,
+  "command_topic": "[DeveloperId]/[DeviceId]/buzzerSwitch/set",
+  "name": "buzzerSwitch",
+  "device_class": "switch",
+  "value_template": "{{ value_json.buzzerSwitch}}",
+  "payload_on": true,
+  "payload_off": false,
+  "state_on": true
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]solarInputPower/config
+{
+  "unique_id": "[DeviceId]solarInputPower",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "unit_of_measurement": "W",
+  "command_topic": "[DeveloperId]/[DeviceId]/solarInputPower/set",
+  "name": "solarInputPower",
+  "device_class": "power",
+  "value_template": "{{ value_json.solarInputPower}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]packInputPower/config
+{
+  "unique_id": "[DeviceId]packInputPower",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "unit_of_measurement": "W",
+  "command_topic": "[DeveloperId]/[DeviceId]/packInputPower/set",
+  "name": "packInputPower",
+  "device_class": "power",
+  "value_template": "{{ value_json.packInputPower}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]outputPackPower/config
+{
+  "unique_id": "[DeviceId]outputPackPower",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "unit_of_measurement": "W",
+  "command_topic": "[DeveloperId]/[DeviceId]/outputPackPower/set",
+  "name": "outputPackPower",
+  "device_class": "power",
+  "value_template": "{{ value_json.outputPackPower}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]outputHomePower/config
+{
+  "unique_id": "[DeviceId]outputHomePower",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "unit_of_measurement": "W",
+  "command_topic": "[DeveloperId]/[DeviceId]/outputHomePower/set",
+  "name": "outputHomePower",
+  "device_class": "power",
+  "value_template": "{{ value_json.outputHomePower}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]outputLimit/config
+{
+  "unique_id": "[DeviceId]outputLimit",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "command_topic": "[DeveloperId]/[DeviceId]/outputLimit/set",
+  "name": "outputLimit",
+  "value_template": "{{ value_json.outputLimit}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]inputLimit/config
+{
+  "unique_id": "[DeviceId]inputLimit",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "command_topic": "[DeveloperId]/[DeviceId]/inputLimit/set",
+  "name": "inputLimit",
+  "value_template": "{{ value_json.inputLimit}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]remainOutTime/config
+{
+  "unique_id": "[DeviceId]remainOutTime",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "command_topic": "[DeveloperId]/[DeviceId]/remainOutTime/set",
+  "name": "remainOutTime",
+  "value_template": "{{ value_json.remainOutTime}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]remainInputTime/config
+{
+  "unique_id": "[DeviceId]remainInputTime",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "command_topic": "[DeveloperId]/[DeviceId]/remainInputTime/set",
+  "name": "remainInputTime",
+  "value_template": "{{ value_json.remainInputTime}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]packState/config
+{
+  "unique_id": "[DeviceId]packState",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "command_topic": "[DeveloperId]/[DeviceId]/packState/set",
+  "name": "packState",
+  "value_template": "{{ value_json.packState}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]packNum/config
+{
+  "unique_id": "[DeviceId]packNum",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "command_topic": "[DeveloperId]/[DeviceId]/packNum/set",
+  "name": "packNum",
+  "value_template": "{{ value_json.packNum}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]electricLevel/config
+{
+  "unique_id": "[DeviceId]electricLevel",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "unit_of_measurement": "%",
+  "command_topic": "[DeveloperId]/[DeviceId]/electricLevel/set",
+  "name": "electricLevel",
+  "device_class": "battery",
+  "value_template": "{{ value_json.electricLevel}}"
+}
+--------------------------------------------------------------
+Topic: [DeveloperId]/sensor/device/[DeviceId]socSet/config
+{
+  "unique_id": "[DeviceId]socSet",
+  "state_topic": "[DeveloperId]/[DeviceId]/state",
+  "unit_of_measurement": "%",
+  "command_topic": "[DeveloperId]/[DeviceId]/socSet/set",
+  "name": "socSet",
+  "value_template": "{{ value_json.socSet}}"
+}
+--------------------------------------------------------------
