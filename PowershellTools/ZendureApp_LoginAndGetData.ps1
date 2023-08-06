@@ -17,8 +17,8 @@
 # weiteren Script unter Verwendung der MQTT-API und der ZendureShell (PowerShell Modul mit MQTT-Client)
 
 # Benutzername eures Zendure Accounts in der App
-$appUsername = "bmachuletz@mnetworx.de";
-$appPassword = "Ficken2023!";
+$appUsername = "xxxxx@xxxxxx.xx";
+$appPassword = "xxxxx";
 
 $hostname = "app.zendure.tech";
 $version  = "v2";
