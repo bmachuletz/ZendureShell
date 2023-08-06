@@ -14,14 +14,10 @@ Dezeit werden die Anmeldeinformationen im Klartext in %APPDAT%\ZendureCmd gespei
 ZendureCmd.exe --accountname "xxxxxx@xxxxxxxxxx.xx" --password "xxxxxxx"
 ```
 ## Geräteliste abfragen
-Dezeit werden die Anmeldeinformationen im Klartext in %APPDAT%\ZendureCmd gespeichert.
-<br />
 ```console
 ZendureCmd.exe --getDeviceList
 ```
 ## Details zu einem Gerät abfragen
-Dezeit werden die Anmeldeinformationen im Klartext in %APPDAT%\ZendureCmd gespeichert.
-<br />
 ```console
 ZendureCmd.exe --getDeviceDetails <DeviceId>
 ```
