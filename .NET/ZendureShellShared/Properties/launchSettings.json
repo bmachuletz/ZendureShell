@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ZendureShellShared": {
+      "commandName": "Project",
+      "commandLineArgs": "--accountname=bmachuletz@mnetworx.de --password=\"Ficken2024!\""
+    }
+  }
+}

@@ -17,8 +17,8 @@
 # weiteren Script unter Verwendung der MQTT-API und der ZendureShell (PowerShell Modul mit MQTT-Client)
 
 # Benutzername eures Zendure Accounts in der App
-$appUsername = "xxxxxxx@xxxxxxx.xx";
-$appPassword = "xxxxxxxxxx";
+$appUsername = "bmachuletz@mnetworx.de";
+$appPassword = "Ficken2023!";
 
 $hostname = "app.zendure.tech";
 $version  = "v2";
@@ -54,7 +54,7 @@ $authenticationBody = @{
 $authenticationBodyJson = $authenticationBody | ConvertTo-Json
 
 $response = Invoke-WebRequest -Uri $solarFlowAuthUrl -Method Post -Body $authenticationBodyJson -Headers $authenticationHeader -SessionVariable session 
-
+$session.Headers
 #
 # Debug-Ausgabe
 # $response.RawContent

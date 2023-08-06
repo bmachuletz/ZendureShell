@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ZendureCmd": {
+      "commandName": "Project",
+      "commandLineArgs": "--getDeviceDetails 33847"
+    }
+  }
+}
