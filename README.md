@@ -10,7 +10,9 @@
 ## Anmelden und speichern der Anmeldeinformationen
 Dezeit werden die Anmeldeinformationen im Klartext in %APPDAT%\ZendureCmd gespeichert.
 <br />
+```CMD
 ZendureCmd.exe --accountname "xxxxxx@xxxxxxxxxx.xx" --password "xxxxxxx"
+```
 <br /><br />
 ## Geräteliste abfragen
 Dezeit werden die Anmeldeinformationen im Klartext in %APPDAT%\ZendureCmd gespeichert.
