@@ -14,6 +14,7 @@ namespace ZendureCmd
         private static string _authToken = string.Empty;
         private static bool _getDeviceList = false;
         private static string _getDeviceDetails = string.Empty;
+        private static bool _getDeveloperAccess = false;
 
         private static bool credentialsFromConfigFile = false;
         public static async Task Main(string[] args)
@@ -24,18 +25,37 @@ namespace ZendureCmd
             {
                 new Option<string>("--accountname", "Anmeldename in der Zendure-APP.") { IsRequired = false },
                 new Option<string>("--password", "Kennwort in der Zendure-APP.") { IsRequired = false },
+                new Option<string>("--serial", "Seriennummer des Geräts.") { IsRequired = false },
                 new Option<bool>("--activateDeviceControl", "Aktiviert die Steuerung des Gerätes.") { IsRequired = false },
                 new Option<bool>("--getDeviceList", "Gibt eine Liste aller Geräte zurück.") { IsRequired = false },
-                new Option<string>("--getDeviceDetails", "Gibt Details zu einem Gerät zurück.") { IsRequired = false }
+                new Option<string>("--getDeviceDetails", "Gibt Details zu einem Gerät zurück.") { IsRequired = false },
+                new Option<bool>("--getDeveloperAccess", "Daten für den MQTT-Developerzugang anzeigen.") { IsRequired = false }
+
             };
 
-            rootCommand.Handler = CommandHandler.Create<string, string, bool, bool, string>((accountname, password, activateDeviceControl, getDeviceList, getDeviceDetails) =>
+            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool>(async (accountname, password, serial, activateDeviceControl, getDeviceList, getDeviceDetails, getDeveloperAccess) =>
             {
+                if(getDeveloperAccess)
+                {
+                    if(string.IsNullOrEmpty(serial) || string.IsNullOrEmpty(accountname))
+                    {
+                        Console.WriteLine("Accountname und Seriennummer des Geräts müssen angeben werden.");
+                        Environment.Exit(-1);
+                    }
+                    else
+                    {
+                        _getDeveloperAccess = true;
+                        _accountname = accountname;
+                        _password = serial;
+                    }
+                    return;
+                }
+                
+
                 if (!string.IsNullOrEmpty(accountname) && !string.IsNullOrEmpty(password))
                 {
                     _accountname = accountname;
                     _password = password;
-                    // Console.WriteLine($"Accountname: {accountname}");
                 }
                 else
                 {
@@ -53,28 +73,32 @@ namespace ZendureCmd
 
                 if (getDeviceList == true)
                 {
-                    // Console.WriteLine("GetDeviceList: true");
                     _getDeviceList = true;
                 }
 
                 if (getDeviceDetails != null)
                 {
-                    // Console.WriteLine($"GetDeviceDetails: {getDeviceDetails}");
                     _getDeviceDetails = getDeviceDetails;
                 }
 
-                if (activateDeviceControl != null)
+                if (activateDeviceControl)
                 {
-                    // Console.WriteLine($"ActivateDeviceControl: {activateDeviceControl}");
+
                 }
 
             });
-            rootCommand.Invoke(args);
+            await rootCommand.InvokeAsync(args);
             
-            if(string.IsNullOrEmpty(_accountname) || string.IsNullOrEmpty(_password))
+            if(_getDeveloperAccess == true)
+            {
+                ZendureApiWrapper zendureHttpForDeveloperAccess = new ZendureApiWrapper(_password, _accountname);
+                var developerData = await zendureHttpForDeveloperAccess.GetDeveloperToken();
+                Console.WriteLine($"{Environment.NewLine}{Environment.NewLine}{developerData.DataToJson()}{Environment.NewLine}");
+                Environment.Exit(-1);
+            }
+            else if(string.IsNullOrEmpty(_accountname) || string.IsNullOrEmpty(_password))
             {
                 Console.WriteLine("\r\nKeine Anmeldedaten gefunden.");
-              //  throw new Exception("Keine Anmeldedaten gefunden.");
 
                 Environment.Exit(-1);
             }

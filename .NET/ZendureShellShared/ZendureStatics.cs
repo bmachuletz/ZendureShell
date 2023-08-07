@@ -18,14 +18,15 @@ namespace ZendureShellShared
         private static readonly string APP_AUTH_PATH = "/auth/app/token";
         private static readonly string APP_DETAIL_PATH = "/device/solarFlow/detail";
         private static readonly string APP_DEVICELIST_PATH = "/productModule/device/queryDeviceListByConsumerId";
+        private static readonly string APP_DEVELOPER_PATH = "/developer/api/apply";
 
         public static readonly string APP_AUTH_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_AUTH_PATH}";
         public static readonly string APP_DEVICELIST_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_DEVICELIST_PATH}";
         public static readonly string APP_DETAILS_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_DETAIL_PATH}";
+        public static readonly string APP_DEVELOPER_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_DEVELOPER_PATH}";
 
         public static Dictionary<string, string> AUTH_HEADER = new Dictionary<string, string>()
         {
-         //   { "Content-Type", "application/json" },
             { "Accept-Language", "de-DE" },
             { "appVersion", "4.3.1" },
             { "User-Agent", "Zendure/4.3.1 (iPhone; iOS 14.4.2; Scale/3.00)" },

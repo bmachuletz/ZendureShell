@@ -12,6 +12,8 @@ namespace ZendureShellShared
 
         public bool LoggedIn { get => loggedIn; }
 
+        private bool developerMode = false;
+
       //  public string Password { set => password = value; }
       //  public string Username { set => username = value; }
 
@@ -26,32 +28,36 @@ namespace ZendureShellShared
             ZendureStatics.AUTH_HEADER["Blade-Auth"] = this.authToken;
         }
 
-
-        public async Task<IZendureResonse> Login()
+        public ZendureApiWrapper(string SerialNumber, string Username)
         {
-          //  if (string.IsNullOrEmpty(this.authToken))
-           // {
-                var x = await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL) as ZendureAuthResponse;
-                if (x.success == true)
-                {
-                    loggedIn = true;
-                }
-
-                return x;
-           /* }
-            else
-            {
-                loggedIn = true;
-                var x = new ZendureAuthResponse();
-                x.success = true;
-
-                return x;
-            }*/
+            developerMode = true;
+            DeveloperRequestBody = new ZendureDeveloperRequestBody { snNumber = SerialNumber, account = Username };
         }
 
-        public async Task<IZendureResonse> GetDeviceList()
+        public async Task<IZendureResponse> Login()
         {
-            if(loggedIn == false)
+            if(developerMode == true)
+            {
+                return new ZendureMessageResponse { Message = "Zugriff auf die REST-API im Developermode nicht verfügbar."};
+            }
+
+            var x = await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL) as ZendureAuthResponse;
+            if (x.success == true)
+            {
+                loggedIn = true;
+            }
+
+            return x;
+        }
+
+        public async Task<IZendureResponse> GetDeviceList()
+        {
+            if (developerMode == true)
+            {
+                return new ZendureMessageResponse { Message = "Zugriff auf die REST-API im Developermode nicht verfügbar." };
+            }
+
+            if (loggedIn == false)
             {
                 throw new Exception("Not logged in");
             }
@@ -59,8 +65,13 @@ namespace ZendureShellShared
             return await GetResponse(HttpMethod.Post, ZendureStatics.APP_DEVICELIST_URL);
         }
 
-        public async Task<IZendureResonse> GetDeviceDetails(string deviceId)
+        public async Task<IZendureResponse> GetDeviceDetails(string deviceId)
         {
+            if (developerMode == true)
+            {
+                return new ZendureMessageResponse { Message = "Zugriff auf die REST-API im Developermode nicht verfügbar." };
+            }
+
             if (loggedIn == false)
             {
                 throw new Exception("Not logged in");
@@ -69,5 +80,17 @@ namespace ZendureShellShared
             
             return await GetResponse(HttpMethod.Post, ZendureStatics.APP_DETAILS_URL);
         }
+
+        public async Task<IZendureResponse> GetDeveloperToken()
+        {
+            if (developerMode == false)
+            {
+                return await new Task<IZendureResponse>(() => { return new ZendureMessageResponse { Message = "Zugriff auf den Developermode im REST-API Modus nicht verfügbar." }; } );
+            }
+
+            return await GetResponse(HttpMethod.Post, ZendureStatics.APP_DEVELOPER_URL);
+        }
+
+        
     }
 }

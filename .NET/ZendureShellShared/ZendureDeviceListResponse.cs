@@ -45,12 +45,22 @@ namespace ZendureShellShared
         public bool isSwitch { get; set; }
     }
 
-    public class ZendureDeviceListResponse : IZendureResonse
+    public class ZendureDeviceListResponse : IZendureResponse
     {
         public int code { get; set; }
         public bool success { get; set; }
         public List<Device> data { get; set; }
         public string msg { get; set; }
+
+        public string ToJson()
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+
+        public string DataToJson()
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this.data);
+        }
     }
 
     public class UpgradeStatus

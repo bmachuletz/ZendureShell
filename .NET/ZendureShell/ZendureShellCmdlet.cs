@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Management.Automation;  // Windows PowerShell namespace.
-using System.Threading;              // Thread pool namespace for posting work.
-using System.Diagnostics;            // Diagnostics namespace for retrieving
-using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet;
 using MQTTnet.Protocol;
-using MQTTnet.Server;
 using System.IO.MemoryMappedFiles;
-using System.Xml.Linq;
-using System.IO;
-using MQTTnet.Protocol;
+
 
 namespace ZendureShell
 {
@@ -77,27 +68,14 @@ namespace ZendureShell
                 : base(command)
             {
                 SetJobState(JobState.NotStarted);
-                var options = new ManagedMqttClientOptionsBuilder()
-                    .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-                    .WithClientOptions(new MqttClientOptionsBuilder()
-                    .WithClientId(Guid.NewGuid().ToString())
-                    .WithCredentials("xxxx", "xxxx")
-                    .WithTcpServer("mqtt.zen-iot.com", 1883)
-                    .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
-                    .WithCleanSession(true)
-                    .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)).Build();
+
                 
 
                 string appKey = "xxxxxxx";
 
-                managedMqttClient = new MqttFactory().CreateManagedMqttClient();
-                
-                managedMqttClient.StartAsync(options);
 
-                if (!managedMqttClient.IsConnected) while (managedMqttClient.IsConnected == false) { Task.Delay(250); };
 
-                managedMqttClient.SubscribeAsync($"{appKey}/#");
-                managedMqttClient.SubscribeAsync("/server/app/xxxxx/#"); 
+
 
                 managedMqttClient.ApplicationMessageReceivedAsync += e =>
                 {
