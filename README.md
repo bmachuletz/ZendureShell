@@ -21,4 +21,7 @@ ZendureCmd.exe --getDeviceList
 ```console
 ZendureCmd.exe --getDeviceDetails <DeviceId>
 ```
-<br /><br />
+## Deverloper MQTT-Accountinformationen abrufen
+```console
+ZendureCmd.exe --getDeveloperAccess --accountname="xxxxxx@xxxxxxxxxx.xx" --serial="SERIENNUMMER_GERÄT"
+```
