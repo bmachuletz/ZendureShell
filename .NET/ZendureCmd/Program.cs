@@ -15,7 +15,7 @@ namespace ZendureCmd
         private static bool _getDeviceList = false;
         private static string _getDeviceDetails = string.Empty;
         private static bool _getDeveloperAccess = false;
-        private static int _getBatteryLevel = 0;
+        private static string _getBatteryDetails = string.Empty;
         private static bool _reauth = false;
 
         private static bool credentialsFromConfigFile = false;
@@ -35,14 +35,14 @@ namespace ZendureCmd
                 new Option<bool>("--getDeviceList", "Gibt eine Liste aller Geräte zurück.") { IsRequired = false },
                 new Option<string>("--getDeviceDetails", "Gibt Details zu einem Gerät zurück.") { IsRequired = false },
                 new Option<bool>("--getDeveloperAccess", "Daten für den MQTT-Developerzugang anzeigen.") { IsRequired = false },
-                new Option<int>("--getBatteryLevel", getDefaultValue:()=>0, "Batterieladung anzeigen (0 = alle).") { IsRequired = false },
+                new Option<string>("--getBatteryDetails", "Batterieladung anzeigen.") { IsRequired = false },
                 new Option<bool>("--reauth", "Neuanmeldung an der RestAPI (bspw. Wechsel des Accounts).") { IsRequired = false }
 
             };
 
-            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool, Int32, bool>(
+            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool, string, bool>(
                 async  (accountname, password, serial, activateDeviceControl, getDeviceList, 
-                        getDeviceDetails, getDeveloperAccess, getBatteryLevel, reauth) =>
+                        getDeviceDetails, getDeveloperAccess, getBatteryDetails, reauth) =>
             {
                 if(getDeveloperAccess)
                 {
@@ -86,9 +86,9 @@ namespace ZendureCmd
                     _getDeviceDetails = getDeviceDetails;
                 }
 
-                if (getBatteryLevel >= 0)
+                if (getBatteryDetails != null)
                 {
-                    _getBatteryLevel = getBatteryLevel;
+                    _getBatteryDetails = getBatteryDetails;
                 }
 
                 // DEFAULT equals false
@@ -169,10 +169,15 @@ namespace ZendureCmd
                 var deviceDetailsResponse = await zendureHttp.GetDeviceDetails(_getDeviceDetails);
                 Console.WriteLine(JsonConvert.SerializeObject(deviceDetailsResponse));
             }
-            else if(zendureHttp.LoggedIn == true && _getBatteryLevel >= 0)
+            else if(zendureHttp.LoggedIn == true && _getBatteryDetails != string.Empty)
             {
-             /*   var batteryLevelResponse = await zendureHttp.GetBatteryLevel(_getBatteryLevel);
-                Console.WriteLine(JsonConvert.SerializeObject(batteryLevelResponse));*/
+                Console.WriteLine(Environment.NewLine);
+                var deviceDetailsResponse = await zendureHttp.GetDeviceDetails(_getBatteryDetails) as ZendureDeviceDetailsResponse;
+                deviceDetailsResponse.data.packDataList.ForEach(async device =>
+                {
+                    Console.WriteLine(JsonConvert.SerializeObject(device));
+                    Console.WriteLine(Environment.NewLine);
+                });
             }
             else
             {
