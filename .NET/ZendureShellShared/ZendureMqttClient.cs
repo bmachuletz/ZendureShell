@@ -82,6 +82,18 @@ namespace ZendureShellShared
             managedMqttClient.StopAsync();
         }
 
+        public void Subscribe(string topic)
+        {   
+            if (managedMqttClient.IsConnected == false)
+            {
+                Connect();
+            }
+            else
+            {
+                managedMqttClient.SubscribeAsync(topic);
+            }
+        }
+
         public void Publish(string topic, string payload)
         {
             if (managedMqttClient.IsConnected == false)

@@ -21,7 +21,16 @@ namespace ZendureShellShared
                 .WithTimeout(TimeSpan.FromSeconds(30))
                 .WithCleanSession()).Build();
             */
+            
             base.Connect();
+        }
+
+
+        public async Task LoadAsync()
+        {
+            ZendureApiWrapper zendureApiWrapperDev = new ZendureApiWrapper(_serialNumber, _username);
+            var x = await zendureApiWrapperDev.GetDeveloperToken() as ZendureDeveloperApiResponse;
+
         }
     }
 }

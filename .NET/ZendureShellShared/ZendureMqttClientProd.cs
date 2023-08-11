@@ -25,12 +25,14 @@ namespace ZendureShellShared
                 .WithTimeout(TimeSpan.FromSeconds(30))
                 .WithCleanSession()).Build();
 
-            base.Connect();
+            LoadAsync().Wait();
         }
 
         private async Task LoadAsync()
         {
-            
+            base.Connect();
+
+            base.Subscribe()
         }
     }
 }
