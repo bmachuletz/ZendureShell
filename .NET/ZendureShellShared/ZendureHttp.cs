@@ -1,17 +1,21 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ZendureShellShared
 {
     public abstract class ZendureHttp : IDisposable
     {
-        private HttpClient client;
+        private HttpClient? client;
         private HttpClientHandler handler;
         private ZendureDeveloperRequestBody developerReuestBody;
         private string body;
-        dynamic authResponse;
+        dynamic? authResponse;
 
         public ZendureDeveloperRequestBody DeveloperRequestBody { get => developerReuestBody; set => developerReuestBody = value; }
 
@@ -29,7 +33,7 @@ namespace ZendureShellShared
             try
             {
                 HttpResponseMessage response;
-                string responseBody = string.Empty;
+                string? responseBody = string.Empty;
       
                 StringContent data;
                 client.DefaultRequestHeaders.Clear();
@@ -61,9 +65,9 @@ namespace ZendureShellShared
                             authResponse = new ZendureDeviceDetailsResponse();
                             body = JsonConvert.SerializeObject(ZendureStatics.DEVICE_DETAIL_BODY);
                             data = new StringContent(body, Encoding.UTF8, "application/json");
-                            
+
                         }
-                        else if(Url.Equals(ZendureStatics.APP_DEVELOPER_URL))
+                        else if (Url.Equals(ZendureStatics.APP_DEVELOPER_URL))
                         {
                             authResponse = new ZendureDeveloperApiResponse();
                             body = JsonConvert.SerializeObject(new ZendureDeveloperRequestBody { account = developerReuestBody.account, snNumber = developerReuestBody.snNumber });
@@ -74,56 +78,60 @@ namespace ZendureShellShared
                             throw Exception("Unknown Url");
                         }
 
-
-                        foreach (KeyValuePair<string, string> header in ZendureStatics.AUTH_HEADER)
+                        if (!Url.Equals(ZendureStatics.APP_DEVELOPER_URL))
                         {
-                            client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                            foreach (KeyValuePair<string, string> header in ZendureStatics.AUTH_HEADER)
+                            {
+                                client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                            }
                         }
 
                         response = await client.PostAsync(Url, data);
                         response.EnsureSuccessStatusCode();
                         responseBody = await response.Content.ReadAsStringAsync();
 
+                        if (response.RequestMessage.RequestUri != null && responseBody != null)
+                        {
+                            if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_AUTH_URL))
+                            {
+                                authResponse = JsonConvert.DeserializeObject<ZendureAuthResponse>(responseBody);
+                                ZendureStatics.AUTH_HEADER["Blade-Auth"] = $"bearer {authResponse.data.accessToken}";
+                                client.DefaultRequestHeaders.Remove("Blade-Auth");
+                                client.DefaultRequestHeaders.Add("Blade-Auth", ZendureStatics.AUTH_HEADER["Blade-Auth"]);
+                                returnBody = "{ \"status\": \"OK\" }";
+                            }
+                            else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DEVICELIST_URL))
+                            {
+                                authResponse = JsonConvert.DeserializeObject<ZendureDeviceListResponse>(responseBody);
+                                if (authResponse != null)
+                                {
+                                    returnBody = JsonConvert.SerializeObject(authResponse.data);
+                                }
 
-                        if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_AUTH_URL))
-                        {
-                            authResponse = JsonConvert.DeserializeObject<ZendureAuthResponse>(responseBody);
-                            ZendureStatics.AUTH_HEADER["Blade-Auth"] = $"bearer {authResponse.data.accessToken}";
-                            client.DefaultRequestHeaders.Remove("Blade-Auth");
-                            client.DefaultRequestHeaders.Add("Blade-Auth", ZendureStatics.AUTH_HEADER["Blade-Auth"]);
-                            returnBody = "{ \"status\": \"OK\" }";
-                        }
-                        else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DEVICELIST_URL))
-                        {
-                            authResponse = JsonConvert.DeserializeObject<ZendureDeviceListResponse>(responseBody);
-                            if(authResponse != null)
-                            {
-                                returnBody = JsonConvert.SerializeObject(authResponse.data);
                             }
-                            
-                        }
-                        else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DETAILS_URL))
-                        {
-                            authResponse = JsonConvert.DeserializeObject<ZendureDeviceDetailsResponse>(responseBody);
-                            if (authResponse != null)
+                            else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DETAILS_URL))
                             {
-                                returnBody = JsonConvert.SerializeObject(authResponse.data);
+                                authResponse = JsonConvert.DeserializeObject<ZendureDeviceDetailsResponse>(responseBody);
+                                if (authResponse != null)
+                                {
+                                    returnBody = JsonConvert.SerializeObject(authResponse.data);
+                                }
                             }
-                        }
-                        else if(response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DEVELOPER_URL))
-                        {
-                            authResponse = JsonConvert.DeserializeObject<ZendureDeveloperApiResponse>(responseBody);
-                            if (authResponse != null)
+                            else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DEVELOPER_URL))
                             {
-                                returnBody = authResponse.DataToJson();
+                                authResponse = JsonConvert.DeserializeObject<ZendureDeveloperApiResponse>(responseBody);
+                                if (authResponse != null)
+                                {
+                                    
+                                    returnBody = authResponse.DataToJson();
+                                }
                             }
+                            else
+                            {
+                                Console.WriteLine("Unknown URL");
+                            }
+                            //     Console.WriteLine(responseBody);
                         }
-                        else
-                        {
-                            Console.WriteLine("Unknown URL");
-                        }
-                   //     Console.WriteLine(responseBody);
-
                         break;
                     default:
                         break;

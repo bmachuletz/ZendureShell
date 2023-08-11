@@ -1,4 +1,6 @@
-﻿namespace ZendureShellShared
+﻿using System;
+
+namespace ZendureShellShared
 {
     public class ZendureMqttMessageArrivedEventArgs : EventArgs
     {

@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ZendureShellShared
 {
@@ -59,6 +61,7 @@ namespace ZendureShellShared
 
             if (loggedIn == false)
             {
+                Console.WriteLine(ZendureStatics.AUTH_HEADER["Blade-Auth"]);
                 throw new Exception("Not logged in");
             }
             await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL);

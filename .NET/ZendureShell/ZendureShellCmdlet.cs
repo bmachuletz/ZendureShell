@@ -59,7 +59,7 @@ namespace ZendureShell
 
         private class SampleJob : Job
         {
-            IManagedMqttClient managedMqttClient;
+
             System.IO.MemoryMappedFiles.MemoryMappedFile publishMemoryMappedFile;
             EventWaitHandle eventWaitHandle;
 
@@ -76,13 +76,13 @@ namespace ZendureShell
 
 
 
-
+                /*
                 managedMqttClient.ApplicationMessageReceivedAsync += e =>
                 {
                     Output.Add(PSObject.AsPSObject($"{e.ApplicationMessage.Topic} : {Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment)}{Environment.NewLine}{Environment.NewLine}"));
                     return Task.CompletedTask;
                 };
-
+                */
 
                 publishMemoryMappedFile = MemoryMappedFile.CreateOrOpen("ZendureShellMemory", Constants.MEMORY_MAPPED_FILESIZE, MemoryMappedFileAccess.ReadWrite);
                 
@@ -112,8 +112,8 @@ namespace ZendureShell
                                         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                                         .Build();
                                   
-                                    var x = managedMqttClient.InternalClient.PublishAsync(message).Result;
-                                    Console.WriteLine("{0} : {1}", x.IsSuccess, x.ReasonString);
+                                 //   var x = managedMqttClient.InternalClient.PublishAsync(message).Result;
+                                 //   Console.WriteLine("{0} : {1}", x.IsSuccess, x.ReasonString);
                                     Console.WriteLine(topic + " " + data);
                                     Console.WriteLine(command.Length);
 
@@ -176,12 +176,13 @@ namespace ZendureShell
             // Retrieve the processes of the local computer.
             void DoProcessLogic()
             {
+                /*
                 while (managedMqttClient != null)
                 {
                     Thread.Sleep(2000);
                     hasMoreData = true;
                 }
-
+                */
                 Output.Complete();
             } 
         }

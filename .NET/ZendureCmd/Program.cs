@@ -2,7 +2,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using ZendureShellShared;
 
 namespace ZendureCmd
@@ -15,10 +15,15 @@ namespace ZendureCmd
         private static bool _getDeviceList = false;
         private static string _getDeviceDetails = string.Empty;
         private static bool _getDeveloperAccess = false;
+        private static int _getBatteryLevel = 0;
+        private static bool _reauth = false;
 
         private static bool credentialsFromConfigFile = false;
         public static async Task Main(string[] args)
         {
+            ZendureCredentials credentials = new ZendureCredentials();
+            await credentials.Fill();
+
             ZendureApiWrapper zendureHttp;
 
             var rootCommand = new RootCommand
@@ -29,11 +34,15 @@ namespace ZendureCmd
                 new Option<bool>("--activateDeviceControl", "Aktiviert die Steuerung des Gerätes.") { IsRequired = false },
                 new Option<bool>("--getDeviceList", "Gibt eine Liste aller Geräte zurück.") { IsRequired = false },
                 new Option<string>("--getDeviceDetails", "Gibt Details zu einem Gerät zurück.") { IsRequired = false },
-                new Option<bool>("--getDeveloperAccess", "Daten für den MQTT-Developerzugang anzeigen.") { IsRequired = false }
+                new Option<bool>("--getDeveloperAccess", "Daten für den MQTT-Developerzugang anzeigen.") { IsRequired = false },
+                new Option<int>("--getBatteryLevel", getDefaultValue:()=>0, "Batterieladung anzeigen (0 = alle).") { IsRequired = false },
+                new Option<bool>("--reauth", "Neuanmeldung an der RestAPI (bspw. Wechsel des Accounts).") { IsRequired = false }
 
             };
 
-            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool>(async (accountname, password, serial, activateDeviceControl, getDeviceList, getDeviceDetails, getDeveloperAccess) =>
+            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool, Int32, bool>(
+                async  (accountname, password, serial, activateDeviceControl, getDeviceList, 
+                        getDeviceDetails, getDeveloperAccess, getBatteryLevel, reauth) =>
             {
                 if(getDeveloperAccess)
                 {
@@ -41,6 +50,12 @@ namespace ZendureCmd
                     {
                         Console.WriteLine("Accountname und Seriennummer des Geräts müssen angeben werden.");
                         Environment.Exit(-1);
+                    }
+                    else if(!string.IsNullOrEmpty(credentials.AccountName) || !string.IsNullOrEmpty(credentials.AccountName))
+                    {
+                        _getDeveloperAccess = true;
+                        _accountname = credentials.AccountName;
+                        _password = credentials.Password;
                     }
                     else
                     {
@@ -52,21 +67,11 @@ namespace ZendureCmd
                 }
                 
 
-                if (!string.IsNullOrEmpty(accountname) && !string.IsNullOrEmpty(password))
+                if (!string.IsNullOrEmpty(credentials.AccountName) && !string.IsNullOrEmpty(credentials.Password) && !string.IsNullOrEmpty(credentials.BearerToken))
                 {
-                    _accountname = accountname;
-                    _password = password;
-                }
-                else
-                {
-                    ZendureAuthFile loginData = JsonConvert.DeserializeObject<ZendureAuthFile>(ZendureShellShared.FileHandler.LoadFileFromAppData("ZendureLoginInformation.json"));
-
-                    if (loginData != null)
-                    {
-                        _accountname = loginData.AccountName;
-                        _password = loginData.Password;
-                        _authToken = loginData.BladeAuth;
-                    }
+                    _accountname = credentials.AccountName;
+                    _password = credentials.Password;
+                    _authToken = credentials.BearerToken;
 
                     credentialsFromConfigFile = true;
                 }
@@ -81,6 +86,14 @@ namespace ZendureCmd
                     _getDeviceDetails = getDeviceDetails;
                 }
 
+                if (getBatteryLevel >= 0)
+                {
+                    _getBatteryLevel = getBatteryLevel;
+                }
+
+                // DEFAULT equals false
+                _reauth = reauth;
+
                 if (activateDeviceControl)
                 {
 
@@ -89,6 +102,13 @@ namespace ZendureCmd
             });
             await rootCommand.InvokeAsync(args);
             
+            if(_reauth == true)
+            {
+                await credentials.Fill(true);
+
+                return;
+            }
+
             if(_getDeveloperAccess == true)
             {
                 ZendureApiWrapper zendureHttpForDeveloperAccess = new ZendureApiWrapper(_password, _accountname);
@@ -98,14 +118,16 @@ namespace ZendureCmd
             }
             else if(string.IsNullOrEmpty(_accountname) || string.IsNullOrEmpty(_password))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("\r\nKeine Anmeldedaten gefunden.");
+                Console.ResetColor();
 
                 Environment.Exit(-1);
             }
 
             if(string.IsNullOrEmpty(_authToken))
             {
-                zendureHttp = new ZendureApiWrapper(_accountname, _password);
+                zendureHttp = new ZendureApiWrapper(_accountname, _password, string.Empty);
             }
             else
             {
@@ -117,20 +139,19 @@ namespace ZendureCmd
 
             if(zendureHttp.LoggedIn == true)
             {
-                // Console.WriteLine("Erfolgreich eingeloggt.");
-
                 if (credentialsFromConfigFile == false)
                 {
                     ZendureAuthFile loginData = new ZendureAuthFile
                     {
                         AccountName = _accountname,
                         Password = _password,
-                        BladeAuth = $"bearer {((ZendureShellShared.ZendureAuthResponse)loginResponse).data.accessToken}"
+                        BladeAuth = $"{((ZendureAuthResponse)loginResponse).data.accessToken}"
                     };
-
+                    /*
                     ZendureShellShared.FileHandler.SaveFileInAppData(
-                        "ZendureLoginInformation.json",
+                        "RestApi_Config.json",
                         JsonConvert.SerializeObject(loginData));
+                    */
                 }
             }
             else
@@ -147,6 +168,11 @@ namespace ZendureCmd
             {
                 var deviceDetailsResponse = await zendureHttp.GetDeviceDetails(_getDeviceDetails);
                 Console.WriteLine(JsonConvert.SerializeObject(deviceDetailsResponse));
+            }
+            else if(zendureHttp.LoggedIn == true && _getBatteryLevel >= 0)
+            {
+             /*   var batteryLevelResponse = await zendureHttp.GetBatteryLevel(_getBatteryLevel);
+                Console.WriteLine(JsonConvert.SerializeObject(batteryLevelResponse));*/
             }
             else
             {

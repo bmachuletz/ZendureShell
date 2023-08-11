@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace ZendureShellShared
 {
     public class FileHandler
     {
-        public static string LoadFileFromAppData(string fileName)
+        public static string? LoadFileFromAppData(string fileName)
         {
             try
             {
