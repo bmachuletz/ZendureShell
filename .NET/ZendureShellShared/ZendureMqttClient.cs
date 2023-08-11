@@ -10,7 +10,8 @@ namespace ZendureShellShared
 {
     public class ZendureMqttClient : IZendureMqttClient
     {
-        
+        public ZendureCredentials zendureCredentials;
+
         public event EventHandler<ZendureMqttMessageArrivedEventArgs> MessageArrived;
         private Func<MqttApplicationMessageReceivedEventArgs, Task> receivedMessageCallback;
         
@@ -28,6 +29,11 @@ namespace ZendureShellShared
         public string AppKey { get => appKey; }
         public List<string> DeviceKeys { get => deviceKey; }
 
+        public string _serialNumber = string.Empty;
+        public string _username = string.Empty;
+        public string _password = string.Empty;
+        public string _authToken = string.Empty;
+
         public ZendureMqttClient(ZendureMqttClientVariant zendureMqttClientVariant)
         {
 
@@ -41,14 +47,18 @@ namespace ZendureShellShared
 
         public async Task InitAsync()
         {
-            string _serialNumber = string.Empty;
-            string _username = string.Empty;
-            string _password = string.Empty;
-            string _authToken = string.Empty;
+            zendureCredentials = new ZendureCredentials();
+            await zendureCredentials.Fill();
 
-            ZendureApiWrapper zendureApiWrapperDev = new ZendureApiWrapper(_serialNumber, _username);
-            var x = await zendureApiWrapperDev.GetDeveloperToken() as ZendureDeveloperApiResponse;
+            _serialNumber = zendureCredentials.SerialNumber;
+            _username     = zendureCredentials.AccountName;
+            _password     = zendureCredentials.Password;
+            _authToken    = zendureCredentials.BearerToken;
 
+          
+
+
+            /*
             ZendureApiWrapper zendureApiWrapperRest = new ZendureApiWrapper(_username, _password, _authToken);
             var y = await zendureApiWrapperRest.GetDeviceList() as ZendureDeviceListResponse;
             y.data.ForEach(device =>
@@ -57,7 +67,7 @@ namespace ZendureShellShared
             });
 
             appKey = x.data.appKey;
-
+            */
         }
 
         public void Connect()

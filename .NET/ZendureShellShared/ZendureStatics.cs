@@ -20,6 +20,11 @@ namespace ZendureShellShared
         private static readonly string APP_DEVICELIST_PATH = "/productModule/device/queryDeviceListByConsumerId";
         private static readonly string APP_DEVELOPER_PATH = "/developer/api/apply";
 
+        public static readonly string APP_MQTT_SERVER = "mq.zen-iot.com";
+        public static readonly Int32  APP_MQTT_PORT = 1833;
+        public static readonly string APP_MQTT_USER = "zenApp";
+        public static readonly string APP_MQTT_PASSWORD = "oK#PCgy6OZxd";
+
         public static readonly string APP_AUTH_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_AUTH_PATH}";
         public static readonly string APP_DEVICELIST_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_DEVICELIST_PATH}";
         public static readonly string APP_DETAILS_URL = $"https://{APP_HOSTNAME}/{APP_VERSION}/{APP_DETAIL_PATH}";
