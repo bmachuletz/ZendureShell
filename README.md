@@ -19,7 +19,11 @@ ZendureCmd.exe --getDeviceList
 ```
 ## Details zu einem Gerät abfragen
 ```console
-ZendureCmd.exe --getDeviceDetails <DeviceId>
+ZendureCmd.exe --getDeviceDetails <DeviceIdSolarflowHub or DeviceIdShell3EmPro>
+```
+## Details zu den Akkus abfragen
+```console
+ZendureCmd.exe --getBatteryDetails <DeviceIdSolarflowHub>
 ```
 ## Deverloper MQTT-Accountinformationen abrufen
 ```console
