@@ -65,13 +65,31 @@ namespace ZendureShellShared
             string programFolderPath = Path.Combine(appDataFolderPath, programName);
             string filePath = Path.Combine(programFolderPath, "ZendureConfig.dat");
 
+
             using (var db = new LiteDatabase(filePath))
             {
                 var col = db.GetCollection<ZendureCredentials>("ZendureConfig");
 
-                col.Upsert(credentials);
+                if(col.Query().Count() > 0)
+                {
+                    var creds = col.Query().FirstOrDefault();
+                    creds.AccountName = credentials.AccountName;
+                    creds.Password = credentials.Password;
+                    creds.BearerToken = credentials.BearerToken;
+                    
+                    col.Update(creds);
+                   
+                }
+                else
+                {
+                    col.Insert(credentials);
+                }
+
+                
             }
         }   
+
+
 
         public static void SaveFileInAppData(string fileName, string content)
         {

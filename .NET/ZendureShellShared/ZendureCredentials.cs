@@ -9,6 +9,7 @@ namespace ZendureShellShared
     
     public class ZendureCredentials
     {
+        public Int32 Id { get; set; }
         private bool needToBeSaved = false;
         private string? _accountname  = string.Empty, _password = string.Empty;
         private string _serialNumber = string.Empty, _appKey   = string.Empty;
