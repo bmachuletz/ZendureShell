@@ -19,6 +19,12 @@ namespace ZendureShellShared
         public string userName { get; set; }
         public string account { get; set; }
         public string countryCode { get; set; }
+        public string iotUrl { get; set; }
+        public string iotUserName { get; set; }
+        public string iotPassword { get; } = "H6s$j9CtNa0N";
+        public string serverNodeUrl { get; set; }
+        public string serverH5Url { get; set; }
+
     }
 
     public class ZendureAuthResponse : IZendureResponse

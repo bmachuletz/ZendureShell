@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.IO;
 
 namespace ZendureShellShared
@@ -7,6 +8,7 @@ namespace ZendureShellShared
     {
         public static string? LoadFileFromAppData(string fileName)
         {
+            
             try
             {
                 string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -31,6 +33,45 @@ namespace ZendureShellShared
                 return null;
             }
         }
+
+        public static ZendureCredentials LoadConfigFromAppData()
+        {
+            string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string programName = "ZendureCmd";
+
+            string programFolderPath = Path.Combine(appDataFolderPath, programName);
+            string filePath = Path.Combine(programFolderPath, "ZendureConfig.dat");
+
+            using (var db = new LiteDatabase(filePath))
+            {
+                var col = db.GetCollection<ZendureCredentials>("ZendureConfig");
+
+                var results = col.Query().FirstOrDefault();
+
+                if(results == null)
+                {
+                    results = new ZendureCredentials();
+                }
+
+                return results;
+            }
+        }
+
+        public static void SaveConfigToAppData(ZendureCredentials credentials)
+        {
+            string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string programName = "ZendureCmd";
+
+            string programFolderPath = Path.Combine(appDataFolderPath, programName);
+            string filePath = Path.Combine(programFolderPath, "ZendureConfig.dat");
+
+            using (var db = new LiteDatabase(filePath))
+            {
+                var col = db.GetCollection<ZendureCredentials>("ZendureConfig");
+
+                col.Upsert(credentials);
+            }
+        }   
 
         public static void SaveFileInAppData(string fileName, string content)
         {

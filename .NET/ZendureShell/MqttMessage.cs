@@ -47,6 +47,9 @@ namespace ZendureShell
             WriteTemplate template = new WriteTemplate();
             template.properties.Add(Property, Value);
 
+            /*
+             * {"properties": { "outputLimit": 300 } }
+             */
 
             Topic = $"iot/[AppKey]/[DeviceId]/properties/write";
 

@@ -16,6 +16,7 @@ namespace ZendureCmd
         private static string _getDeviceDetails = string.Empty;
         private static bool _getDeveloperAccess = false;
         private static string _getBatteryDetails = string.Empty;
+        private static string _setOutputLimit = string.Empty;
         private static bool _reauth = false;
 
         private static bool credentialsFromConfigFile = false;
@@ -36,13 +37,14 @@ namespace ZendureCmd
                 new Option<string>("--getDeviceDetails", "Gibt Details zu einem Gerät zurück.") { IsRequired = false },
                 new Option<bool>("--getDeveloperAccess", "Daten für den MQTT-Developerzugang anzeigen.") { IsRequired = false },
                 new Option<string>("--getBatteryDetails", "Batterieladung anzeigen.") { IsRequired = false },
+                new Option<string>("--setOutputLimit", "Entladeleistung setzen.") { IsRequired = false },
                 new Option<bool>("--reauth", "Neuanmeldung an der RestAPI (bspw. Wechsel des Accounts).") { IsRequired = false }
 
             };
 
-            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool, string, bool>(
+            rootCommand.Handler = CommandHandler.Create<string, string, string, bool, bool, string, bool, string, string, bool>(
                 async  (accountname, password, serial, activateDeviceControl, getDeviceList, 
-                        getDeviceDetails, getDeveloperAccess, getBatteryDetails, reauth) =>
+                        getDeviceDetails, getDeveloperAccess, getBatteryDetails, setOutputLimit, reauth) =>
             {
                 if(getDeveloperAccess)
                 {
@@ -89,6 +91,11 @@ namespace ZendureCmd
                 if (getBatteryDetails != null)
                 {
                     _getBatteryDetails = getBatteryDetails;
+                }
+
+                if (!string.IsNullOrEmpty(setOutputLimit))
+                {
+                    _setOutputLimit = setOutputLimit;
                 }
 
                 // DEFAULT equals false
@@ -178,6 +185,12 @@ namespace ZendureCmd
                     Console.WriteLine(JsonConvert.SerializeObject(device));
                     Console.WriteLine(Environment.NewLine);
                 });
+            }
+            else if(zendureHttp.LoggedIn == true && _setOutputLimit != string.Empty)
+            {
+                ZendureMqttClientProd zendureMqttClientProd = new ZendureMqttClientProd();
+            //    await zendureMqttClientProd.InitAsync();
+                zendureMqttClientProd.Publish("iot/73bkTV/q22vn4A9/properties/write", @"{ 'properties': { 'outputLimit': 150 } }");
             }
             else
             {

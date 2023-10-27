@@ -17,19 +17,19 @@
 # weiteren Script unter Verwendung der MQTT-API und der ZendureShell (PowerShell Modul mit MQTT-Client)
 
 # Benutzername eures Zendure Accounts in der App
-$appUsername = "xxxxx@xxxxxx.xx";
-$appPassword = "xxxxx";
+$appUsername = "xxxxxxxxxxxxx@xxxxxxxx.xx";
+$appPassword = "xxxxxxx";
 
-$hostname = "app.zendure.tech";
-$version  = "v2";
+# Derzeit arbeite ich mit dem EU-Server
+$hostname = "app.zendure.tech/eu";
 
-$solarFlowAuthPath          = "/auth/app/token";
-$solarFlowDetailPath        = "/device/solarFlow/detail";
-$solarFlowDeviceListPath    = "/productModule/device/queryDeviceListByConsumerId";
+$solarFlowAuthPath          = "auth/app/token";
+$solarFlowDetailPath        = "device/solarFlow/detail";
+$solarFlowDeviceListPath    = "productModule/device/queryDeviceListByConsumerId";
 
-$solarFlowAuthUrl           = "https://$hostname/$version/$solarFlowAuthPath";
-$solarFlowDeviceListUrl     = "https://$hostname/$version/$solarFlowDeviceListPath";
-$solarFlowDetailUrl         = "https://$hostname/$version/$solarFlowDetailPath";
+$solarFlowAuthUrl           = "https://$hostname/$solarFlowAuthPath";
+$solarFlowDeviceListUrl     = "https://$hostname/$solarFlowDeviceListPath";
+$solarFlowDetailUrl         = "https://$hostname/$solarFlowDetailPath";
 
 $authenticationHeader = @{
     'Content-Type'          = 'application/json'
@@ -64,7 +64,7 @@ $response = Invoke-WebRequest -Uri $solarFlowAuthUrl -Method Post -Body $authent
 # Diese wird dann später benutzt um die SolarFlow Box zu steuern
 $bearerToken = $response.Content | ConvertFrom-Json | Select-Object -ExpandProperty data |  Select-Object -ExpandProperty accessToken
 $session.Headers["Blade-Auth"] = "bearer $bearerToken";
-
+$bearerToken
 
 # Laden der Geräteliste
 # Die Geräteliste wird benötigt um die ID der Geräte zu ermitteln
@@ -88,3 +88,5 @@ $solarFlowBoxData = @{
 # Debug-Ausgabe
 $solarFlowBoxData.Box
 $solarFlowBoxData.Batterien
+
+# Invoke-WebRequest -Method Get -Uri "https://app.zendure.tech/getFirmwareVersion" -Headers $session.Headers

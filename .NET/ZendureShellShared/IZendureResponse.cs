@@ -2,6 +2,7 @@
 {
     public interface IZendureResponse
     {
+        bool success { get; }
 
         public string ToJson();
 

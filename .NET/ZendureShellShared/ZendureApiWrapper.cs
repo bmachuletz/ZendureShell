@@ -38,15 +38,38 @@ namespace ZendureShellShared
 
         public async Task<IZendureResponse> Login()
         {
-            if(developerMode == true)
+            IZendureResponse? x = null;
+
+            if (developerMode == true)
             {
                 return new ZendureMessageResponse { Message = "Zugriff auf die REST-API im Developermode nicht verfügbar."};
             }
 
-            var x = await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL) as ZendureAuthResponse;
-            if (x.success == true)
+            if (ZendureStatics.AUTH_HEADER["Blade-Auth"].Length < 10)
+            {
+                x = new ZendureAuthResponse();
+                x = await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL) as ZendureAuthResponse;
+                if (x.success == true)
+                {
+                    loggedIn = true;
+                }
+            }
+            else
             {
                 loggedIn = true;
+                x = new ZendureDeviceListResponse();
+                x = await GetDeviceList();
+                
+                if (x.success == true)
+                {
+                    loggedIn = true;
+                } 
+                else
+                {
+                    loggedIn = false;
+                    ZendureStatics.AUTH_HEADER["Blade-Auth"] = "bearer (null)";
+                    await Login();
+                }
             }
 
             return x;

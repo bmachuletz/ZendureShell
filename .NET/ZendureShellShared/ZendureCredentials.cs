@@ -35,7 +35,8 @@ namespace ZendureShellShared
             string programName = "ZendureCmd";
             string programFolderPath = Path.Combine(appDataFolderPath, programName);
 
-            filePath = Path.Combine(programFolderPath, "keyData.json");
+            //  filePath = Path.Combine(programFolderPath, "keyData.json");
+            filePath = Path.Combine(programFolderPath, "ZendureConfig.dat");
         }
 
         public async Task<bool> AuthenticateRestApi(string AccountName = "", string Password = "")
@@ -107,11 +108,13 @@ namespace ZendureShellShared
                             _appKey = ((ZendureDeveloperApiResponse)authResponse2).data.appKey;
                             _clientSecret = ((ZendureDeveloperApiResponse)authResponse2).data.secret;
 
-                            string keyDataString = JsonConvert.SerializeObject(this);
-                            FileHandler.SaveFileInAppData("keyData.json", keyDataString);
+                          //  string keyDataString = JsonConvert.SerializeObject(this);
+                          //  FileHandler.SaveFileInAppData("keyData.json", keyDataString);
+
+                            FileHandler.SaveConfigToAppData(this);
                         }
 
-                        configurationJson = FileHandler.LoadFileFromAppData("keyData.json");
+                        //configurationJson = FileHandler.LoadFileFromAppData("keyData.json");
                     }
                     else
                     {
@@ -131,28 +134,35 @@ namespace ZendureShellShared
                 {
                     needToBeSaved = true;
 
+                    /*
                     configurationJson = FileHandler.LoadFileFromAppData("keyData.json");
                     data = JsonConvert.DeserializeObject<ZendureCredentials>(configurationJson);
-                    Console.WriteLine("Wechse des Kontos für die REST-API.");
+                    */
+                    data = FileHandler.LoadConfigFromAppData();
+
+                    Console.WriteLine("Wechsel des Kontos für die REST-API.");
 
                     if(await AuthenticateRestApi() == true)
                     {
                         data.AccountName = _accountname;
                         data.Password = _password;
                         data.BearerToken = _bearerToken;
+
+                        FileHandler.SaveConfigToAppData(data);
                     }
 
-                    configurationJson = JsonConvert.SerializeObject(data);
+                   // configurationJson = JsonConvert.SerializeObject(data);
 
 
                 }
                 else
                 {
-                    configurationJson = FileHandler.LoadFileFromAppData("keyData.json");
+                    data = FileHandler.LoadConfigFromAppData();
+                    //configurationJson = FileHandler.LoadFileFromAppData("keyData.json");
                 }
 
 
-                if (configurationJson == null)
+                if (data == null)
                 {
                     return;
                 }
@@ -160,7 +170,8 @@ namespace ZendureShellShared
 
             if (data == null)
             {
-                data = JsonConvert.DeserializeObject<ZendureCredentials>(configurationJson);
+                data = FileHandler.LoadConfigFromAppData();
+                //data = JsonConvert.DeserializeObject<ZendureCredentials>(configurationJson);
             }
 
             _accountname = data.AccountName;
@@ -173,7 +184,8 @@ namespace ZendureShellShared
 
             if (needToBeSaved == true)
             {
-                FileHandler.SaveFileInAppData("keyData.json", configurationJson);
+                FileHandler.SaveConfigToAppData(this);
+                // FileHandler.SaveFileInAppData("keyData.json", configurationJson);
             }
         }
     }

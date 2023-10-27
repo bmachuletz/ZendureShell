@@ -36,6 +36,13 @@ namespace ZendureShellShared
 
         public ZendureMqttClient(ZendureMqttClientVariant zendureMqttClientVariant)
         {
+            zendureCredentials = new ZendureCredentials();
+            zendureCredentials.Fill().Wait();
+
+            _serialNumber = zendureCredentials.SerialNumber;
+            _username = zendureCredentials.AccountName;
+            _password = zendureCredentials.Password;
+            _authToken = zendureCredentials.BearerToken;
 
             this.zendureMqttClientVariant = zendureMqttClientVariant;
             managedMqttClient = new MqttFactory().CreateManagedMqttClient();
@@ -47,17 +54,6 @@ namespace ZendureShellShared
 
         public async Task InitAsync()
         {
-            zendureCredentials = new ZendureCredentials();
-            await zendureCredentials.Fill();
-
-            _serialNumber = zendureCredentials.SerialNumber;
-            _username     = zendureCredentials.AccountName;
-            _password     = zendureCredentials.Password;
-            _authToken    = zendureCredentials.BearerToken;
-
-          
-
-
             /*
             ZendureApiWrapper zendureApiWrapperRest = new ZendureApiWrapper(_username, _password, _authToken);
             var y = await zendureApiWrapperRest.GetDeviceList() as ZendureDeviceListResponse;
@@ -72,9 +68,24 @@ namespace ZendureShellShared
 
         public void Connect()
         {
-            managedMqttClient.StartAsync(clientOptions);
+            clientOptions = new ManagedMqttClientOptionsBuilder()
+            .WithAutoReconnectDelay(TimeSpan.FromSeconds(10))
+            .WithClientOptions(new MqttClientOptionsBuilder()
+            .WithClientId(zendureCredentials.BearerToken.Replace("bearer ", string.Empty))
+            .WithTcpServer(ZendureStatics.APP_MQTT_SERVER, ZendureStatics.APP_MQTT_PORT)
+            .WithCredentials(ZendureStatics.APP_MQTT_USER, ZendureStatics.APP_MQTT_PASSWORD)
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(20))
+            .WithTimeout(TimeSpan.FromSeconds(30))
+            .WithCleanSession()).Build();
 
-            if (!managedMqttClient.IsConnected) while (managedMqttClient.IsConnected == false) { Task.Delay(250); };
+            managedMqttClient.SubscribeAsync("xxxxxxxxxxxxxxxxxxxxx");
+
+        //    managedMqttClient.StartAsync(clientOptions).Wait();
+    
+
+           // managedMqttClient.InternalClient.ConnectAsync().Wait();
+
+        //    if (!managedMqttClient.IsConnected) while (managedMqttClient.IsConnected == false) { Task.Delay(250); };
         }
 
         public void Disconnect()

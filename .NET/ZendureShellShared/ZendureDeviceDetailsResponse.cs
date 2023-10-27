@@ -61,7 +61,7 @@ namespace ZendureShellShared
     public class PackDataList
     {
         public int createUser { get; set; }
-        public DateTime createTime { get; set; }
+        public DateTime ? createTime { get; set; }
         public int updateUser { get; set; }
         public DateTime updateTime { get; set; }
         public int isDeleted { get; set; }

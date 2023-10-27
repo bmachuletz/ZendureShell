@@ -13,17 +13,9 @@ namespace ZendureShellShared
     {
         public ZendureMqttClientProd() : base(ZendureMqttClientVariant.ZENDURE_MQTT)
         {
-            
 
-            clientOptions = new ManagedMqttClientOptionsBuilder()
-                .WithAutoReconnectDelay(TimeSpan.FromSeconds(10))
-                .WithClientOptions(new MqttClientOptionsBuilder()
-                .WithClientId(zendureCredentials.BearerToken)
-                .WithTcpServer(ZendureStatics.APP_MQTT_SERVER, ZendureStatics.APP_MQTT_PORT)
-                .WithCredentials(ZendureStatics.APP_MQTT_USER, ZendureStatics.APP_MQTT_PASSWORD)
-                .WithKeepAlivePeriod(TimeSpan.FromSeconds(20))
-                .WithTimeout(TimeSpan.FromSeconds(30))
-                .WithCleanSession()).Build();
+
+
 
             LoadAsync().Wait();
         }
@@ -31,8 +23,8 @@ namespace ZendureShellShared
         private async Task LoadAsync()
         {
             base.Connect();
-
-            base.Subscribe()
+          
+            //  base.Subscribe();
         }
     }
 }

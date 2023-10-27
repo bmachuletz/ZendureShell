@@ -51,9 +51,11 @@ namespace ZendureShellShared
                     case "POST":
                         if (Url.Equals(ZendureStatics.APP_AUTH_URL))
                         {
+
                             authResponse = new ZendureAuthResponse();
                             body = JsonConvert.SerializeObject(ZendureStatics.AUTH_BODY);
                             data = new StringContent(body, Encoding.UTF8, "application/json");
+
                         }
                         else if (Url.Equals(ZendureStatics.APP_DEVICELIST_URL))
                         {
@@ -111,7 +113,12 @@ namespace ZendureShellShared
                             }
                             else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DETAILS_URL))
                             {
-                                authResponse = JsonConvert.DeserializeObject<ZendureDeviceDetailsResponse>(responseBody);
+                                var settings = new JsonSerializerSettings
+                                {
+                                    NullValueHandling = NullValueHandling.Ignore,
+                                    MissingMemberHandling = MissingMemberHandling.Ignore
+                                };
+                                authResponse = JsonConvert.DeserializeObject<ZendureDeviceDetailsResponse>(responseBody, settings);
                                 if (authResponse != null)
                                 {
                                     returnBody = JsonConvert.SerializeObject(authResponse.data);

@@ -10,6 +10,8 @@ namespace ZendureShellShared
     {
         public string Message { get; set; }
 
+        public bool success { get; set; }
+
         public string ToJson()
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(this);

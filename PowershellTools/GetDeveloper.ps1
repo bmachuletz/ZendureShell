@@ -7,14 +7,15 @@
 # License: MIT License
 # License URI: https://opensource.org/licenses/MIT
 
+$url = "https://app.zendure.tech/eu"
 
-$ZendureDeveloperUrl = "https://app.zendure.tech/v2/developer/api/apply";
+$ZendureDeveloperUrl = "$url/developer/api/apply";
 
 # Seriennummer eurer SolarFlow Box
-$serialNumber = "xxxx";
+$serialNumber = "xxxxxxxxxxxxx";
 
 # Benutzername eures Zendure Accounts in der App
-$appUsername = "xxxxx@xxx.xx";
+$appUsername = "xxxxxxxxx@xxxx.de";
 
 $ZendureDeveloperBody = @{ 
                             "snNumber" = "$serialNumber";
