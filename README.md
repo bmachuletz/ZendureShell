@@ -7,6 +7,7 @@
 
 
 # ZendureCmd Example-Commands
+Wenn noch keine Anmeldeinformationen eingegeben wurden, darf kann man auch direkt mit "ZendureCmd.exe --getDeviceList" beginnen. Anschließend wird man zu Eingabe der Benutzerinformationen gebeten (derzeit wird das Kennwort in PlainText auf die Konsole gedruckt - wird noch gefixt).
 ## Anmelden und speichern der Anmeldeinformationen
 Dezeit werden die Anmeldeinformationen im Klartext in %APPDAT%\ZendureCmd gespeichert.
 <br />
