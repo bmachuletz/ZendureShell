@@ -1,21 +1,17 @@
 ﻿using MQTTnet.Client;
-using MQTTnet.Extensions.ManagedClient;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ZendureShellShared
 {
-    public  class ZendureMqttClientProd : ZendureMqttClient
-    {
+    public  class ZendureMqttClientProd : ZendureMqttClient     {
         public ZendureMqttClientProd() : base(ZendureMqttClientVariant.ZENDURE_MQTT)
         {
-
-
-
+            clientOptions = new MqttClientOptionsBuilder()
+            .WithClientId(_authToken)
+            .WithTcpServer(ZendureStatics.APP_MQTT_SERVER, ZendureStatics.APP_MQTT_PORT)
+            .WithCredentials(ZendureStatics.APP_MQTT_USER, ZendureStatics.APP_MQTT_PASSWORD)
+            .WithCleanSession()
+            .Build();
 
             LoadAsync().Wait();
         }

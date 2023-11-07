@@ -2,6 +2,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using System.Linq;
 using System.Threading.Tasks;
 using ZendureShellShared;
 
@@ -17,6 +18,7 @@ namespace ZendureCmd
         private static bool _getDeveloperAccess = false;
         private static string _getBatteryDetails = string.Empty;
         private static string _setOutputLimit = string.Empty;
+        private static string _serial = string.Empty;
         private static bool _reauth = false;
 
         private static bool credentialsFromConfigFile = false;
@@ -46,7 +48,12 @@ namespace ZendureCmd
                 async  (accountname, password, serial, activateDeviceControl, getDeviceList, 
                         getDeviceDetails, getDeveloperAccess, getBatteryDetails, setOutputLimit, reauth) =>
             {
-                if(getDeveloperAccess)
+                if(!string.IsNullOrEmpty(serial))
+                {
+                    _serial = serial;
+                }
+
+                if (getDeveloperAccess)
                 {
                     if(string.IsNullOrEmpty(serial) || string.IsNullOrEmpty(accountname))
                     {
@@ -154,11 +161,6 @@ namespace ZendureCmd
                         Password = _password,
                         BladeAuth = $"{((ZendureAuthResponse)loginResponse).data.accessToken}"
                     };
-                    /*
-                    ZendureShellShared.FileHandler.SaveFileInAppData(
-                        "RestApi_Config.json",
-                        JsonConvert.SerializeObject(loginData));
-                    */
                 }
             }
             else
@@ -188,14 +190,42 @@ namespace ZendureCmd
             }
             else if(zendureHttp.LoggedIn == true && _setOutputLimit != string.Empty)
             {
-                ZendureMqttClientProd zendureMqttClientProd = new ZendureMqttClientProd();
-            //    await zendureMqttClientProd.InitAsync();
-                zendureMqttClientProd.Publish("iot/73bkTV/q22vn4A9/properties/write", @"{ 'properties': { 'outputLimit': 150 } }");
+              
+                Task.Factory.StartNew(() =>
+                {
+                    if (string.IsNullOrEmpty(_serial))
+                    {
+                        Console.WriteLine("Seriennummer des Geräts muss angegeben werden (--serial).");
+                        Environment.Exit(-1);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var deviceListResponse = zendureHttp.GetDeviceList().Result;
+                            Device device = ((ZendureDeviceListResponse)deviceListResponse).data.Where(x => x.snNumber == _serial).FirstOrDefault();
+
+
+                            string topic = string.Format("iot/{0}/{1}/properties/write", device.productKey, device.deviceKey);
+                            ZendureMqttProperties zendureMqttProperties = new ZendureMqttProperties(new MqttProperties { outputLimit = Convert.ToInt32(_setOutputLimit) });
+
+                            ZendureMqttClientProd zendureMqttClientProd = new ZendureMqttClientProd();
+                            zendureMqttClientProd.Publish(topic, JsonConvert.SerializeObject(zendureMqttProperties));
+
+                            zendureMqttClientProd.Disconnect();
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }).Wait();                
             }
             else
             {
                 Console.WriteLine("Keine Aktion ausgewählt.");
             }
+        
         }
     }
 }

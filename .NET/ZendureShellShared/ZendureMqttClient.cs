@@ -1,23 +1,25 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZendureShellShared
 {
     public class ZendureMqttClient : IZendureMqttClient
     {
+
+        private AutoResetEvent resetEvent = new AutoResetEvent(false);
         public ZendureCredentials zendureCredentials;
 
         public event EventHandler<ZendureMqttMessageArrivedEventArgs> MessageArrived;
         private Func<MqttApplicationMessageReceivedEventArgs, Task> receivedMessageCallback;
         
-        private IManagedMqttClient managedMqttClient;
+        private MQTTnet.Client.MqttClient managedMqttClient;
 
-        public ManagedMqttClientOptions clientOptions;
+        public MqttClientOptions clientOptions;
 
         public IZendureMqttClientSubscriber subscriber;
 
@@ -39,17 +41,11 @@ namespace ZendureShellShared
             zendureCredentials = new ZendureCredentials();
             zendureCredentials.Fill().Wait();
 
-            _serialNumber = zendureCredentials.SerialNumber;
-            _username = zendureCredentials.AccountName;
-            _password = zendureCredentials.Password;
-            _authToken = zendureCredentials.BearerToken;
+            _authToken    = zendureCredentials.BearerToken.Replace("bearer ", string.Empty);
 
             this.zendureMqttClientVariant = zendureMqttClientVariant;
-            managedMqttClient = new MqttFactory().CreateManagedMqttClient();
+            managedMqttClient = new MqttFactory().CreateMqttClient() as MQTTnet.Client.MqttClient;
 
-            
-  //          subscriber = new ZendureMqttClientSubscriber(managedMqttClient);
-  //          subscriber.MessageArrived += Subscriber_MessageArrived;
         }
 
         public async Task InitAsync()
@@ -68,29 +64,14 @@ namespace ZendureShellShared
 
         public void Connect()
         {
-            clientOptions = new ManagedMqttClientOptionsBuilder()
-            .WithAutoReconnectDelay(TimeSpan.FromSeconds(10))
-            .WithClientOptions(new MqttClientOptionsBuilder()
-            .WithClientId(zendureCredentials.BearerToken.Replace("bearer ", string.Empty))
-            .WithTcpServer(ZendureStatics.APP_MQTT_SERVER, ZendureStatics.APP_MQTT_PORT)
-            .WithCredentials(ZendureStatics.APP_MQTT_USER, ZendureStatics.APP_MQTT_PASSWORD)
-            .WithKeepAlivePeriod(TimeSpan.FromSeconds(20))
-            .WithTimeout(TimeSpan.FromSeconds(30))
-            .WithCleanSession()).Build();
-
-            managedMqttClient.SubscribeAsync("xxxxxxxxxxxxxxxxxxxxx");
-
-        //    managedMqttClient.StartAsync(clientOptions).Wait();
-    
-
-           // managedMqttClient.InternalClient.ConnectAsync().Wait();
-
-        //    if (!managedMqttClient.IsConnected) while (managedMqttClient.IsConnected == false) { Task.Delay(250); };
+           string clienId = zendureCredentials.BearerToken.Replace("bearer ", string.Empty);        
+           managedMqttClient.ConnectAsync(clientOptions);
+           if (!managedMqttClient.IsConnected) while (managedMqttClient.IsConnected == false) { Task.Delay(250); };
         }
 
         public void Disconnect()
         {
-            managedMqttClient.StopAsync();
+            managedMqttClient.DisconnectAsync();
         }
 
         public void Subscribe(string topic)
@@ -105,6 +86,7 @@ namespace ZendureShellShared
             }
         }
 
+        
         public void Publish(string topic, string payload)
         {
             if (managedMqttClient.IsConnected == false)
@@ -119,8 +101,9 @@ namespace ZendureShellShared
                     .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
                     .Build();
 
-                managedMqttClient.InternalClient.PublishAsync(message);
+                managedMqttClient.PublishAsync(message);
             }
         }
+        
     }
 }

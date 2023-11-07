@@ -2,7 +2,7 @@
   "profiles": {
     "ZendureCmd": {
       "commandName": "Project",
-      "commandLineArgs": "--reauth"
+      "commandLineArgs": "--setOutputLimit 150"
     }
   }
 }

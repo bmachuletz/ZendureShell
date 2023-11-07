@@ -63,6 +63,8 @@ namespace ZendureShellShared
                 if (x.success == true)
                 {
                     loggedIn = true;
+                    Console.WriteLine(ZendureStatics.AUTH_HEADER["Blade-Auth"]);
+
                 } 
                 else
                 {
@@ -87,7 +89,7 @@ namespace ZendureShellShared
                 Console.WriteLine(ZendureStatics.AUTH_HEADER["Blade-Auth"]);
                 throw new Exception("Not logged in");
             }
-            await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL);
+          //  await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL);
             return await GetResponse(HttpMethod.Post, ZendureStatics.APP_DEVICELIST_URL);
         }
 

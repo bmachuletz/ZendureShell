@@ -101,6 +101,7 @@ namespace ZendureShellShared
                                 client.DefaultRequestHeaders.Remove("Blade-Auth");
                                 client.DefaultRequestHeaders.Add("Blade-Auth", ZendureStatics.AUTH_HEADER["Blade-Auth"]);
                                 returnBody = "{ \"status\": \"OK\" }";
+                                Console.WriteLine(authResponse.data.accessToken);
                             }
                             else if (response.RequestMessage.RequestUri.ToString().Equals(ZendureShellShared.ZendureStatics.APP_DEVICELIST_URL))
                             {

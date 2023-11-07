@@ -1,8 +1,4 @@
-﻿
-
-using MQTTnet.Client;
-using MQTTnet.Extensions.ManagedClient;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace ZendureShellShared
 {

@@ -17,10 +17,9 @@
 # weiteren Script unter Verwendung der MQTT-API und der ZendureShell (PowerShell Modul mit MQTT-Client)
 
 # Benutzername eures Zendure Accounts in der App
-$appUsername = "xxxxxxxxxxxxx@xxxxxxxx.xx";
-$appPassword = "xxxxxxx";
+$appUsername = "xxxxxxxxxxxx@xxx.xx";
+$appPassword = "xxxxxxxxxxxxxxxxx";
 
-# Derzeit arbeite ich mit dem EU-Server
 $hostname = "app.zendure.tech/eu";
 
 $solarFlowAuthPath          = "auth/app/token";
@@ -88,5 +87,3 @@ $solarFlowBoxData = @{
 # Debug-Ausgabe
 $solarFlowBoxData.Box
 $solarFlowBoxData.Batterien
-
-# Invoke-WebRequest -Method Get -Uri "https://app.zendure.tech/getFirmwareVersion" -Headers $session.Headers
