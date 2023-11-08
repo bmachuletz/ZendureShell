@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace ZendureShellShared
         private string? _accountname  = string.Empty, _password = string.Empty;
         private string _serialNumber = string.Empty, _appKey   = string.Empty;
         private string _clientSecret = string.Empty, _bearerToken = string.Empty;
+        private string _iotUrl = string.Empty, _iotUsername = string.Empty;
+        private string _iotPassword = string.Empty;
 
         private string filePath = string.Empty;
         private string? configurationJson = string.Empty;
@@ -26,6 +29,9 @@ namespace ZendureShellShared
         public string? AccountName { get { return _accountname; } set { _accountname = value; } }
         public string? Password { get { return _password; } set { _password = value; } }
         public string BearerToken { get { return _bearerToken; } set { _bearerToken = value; } }
+        public string? IotUrl { get { return _iotUrl; } set { _iotUrl = value; } }
+        public string? IotPassword { get { return _iotPassword; } set { _iotPassword = value; } }
+        public string? IotUsername { get { return _iotUsername; } set { _iotUsername = value; } }
 
         ZendureApiWrapper restApi;
         ZendureCredentials data;
@@ -70,10 +76,15 @@ namespace ZendureShellShared
 
                 if (authResponse != null && restApi.LoggedIn == true)
                 {
-                    
-                    _bearerToken = $"bearer {(authResponse).data.accessToken}";
-                    
-                    ZendureStatics.AUTH_HEADER["Authorization"] = _bearerToken;
+
+                    //  _bearerToken = $"bearer {(authResponse).data.accessToken}";
+
+                    _bearerToken = ZendureStatics.AUTH_HEADER["Authorization"] = (authResponse).data.accessToken;
+                    _iotUrl      = authResponse.data.iotUrl;
+                    _iotUsername = authResponse.data.iotUserName;
+                    _iotPassword = authResponse.data.iotPassword;
+
+                    Console.WriteLine($"{_bearerToken}");
                 }
 
                 return restApi.LoggedIn;
@@ -146,8 +157,11 @@ namespace ZendureShellShared
                     if(await AuthenticateRestApi() == true)
                     {
                         data.AccountName = _accountname;
-                        data.Password = _password;
+                        data.Password    = _password;
                         data.BearerToken = _bearerToken;
+                        data.IotPassword = _iotPassword;
+                        data.IotUsername = _iotUsername;
+                        data.IotUrl      = _iotUrl;
 
                         FileHandler.SaveConfigToAppData(data);
                     }
@@ -175,13 +189,16 @@ namespace ZendureShellShared
                 //data = JsonConvert.DeserializeObject<ZendureCredentials>(configurationJson);
             }
 
-            _accountname = data.AccountName;
-            _password = data.Password;
+            _accountname  = data.AccountName;
+            _password     = data.Password;
             _serialNumber = data.SerialNumber;
-            _appKey = data.AppKey;
+            _appKey       = data.AppKey;
             _clientSecret = data.ClientSecret;
-            _deviceKeys = data.DeviceKeys;
-            _bearerToken = data.BearerToken;
+            _deviceKeys   = data.DeviceKeys;
+            _bearerToken  = data.BearerToken;
+            _iotUsername  = data.IotUsername;
+            _iotPassword  = data.IotPassword;
+            _iotUrl       = data.IotUrl;
 
             if (needToBeSaved == true)
             {

@@ -3,13 +3,16 @@ using System.Threading.Tasks;
 
 namespace ZendureShellShared
 {
-    public  class ZendureMqttClientProd : ZendureMqttClient     {
+    public  class ZendureMqttClientProd : ZendureMqttClient     
+    {
         public ZendureMqttClientProd() : base(ZendureMqttClientVariant.ZENDURE_MQTT)
         {
+            var data = FileHandler.LoadConfigFromAppData();
+
             clientOptions = new MqttClientOptionsBuilder()
-            .WithClientId(_authToken)
-            .WithTcpServer(ZendureStatics.APP_MQTT_SERVER, ZendureStatics.APP_MQTT_PORT)
-            .WithCredentials(ZendureStatics.APP_MQTT_USER, ZendureStatics.APP_MQTT_PASSWORD)
+            .WithClientId(data.BearerToken)
+            .WithTcpServer(data.IotUrl, ZendureStatics.APP_MQTT_PORT)
+            .WithCredentials(data.IotUsername, data.IotPassword)
             .WithCleanSession()
             .Build();
 

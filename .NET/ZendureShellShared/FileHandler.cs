@@ -63,6 +63,12 @@ namespace ZendureShellShared
             string programName = "ZendureCmd";
 
             string programFolderPath = Path.Combine(appDataFolderPath, programName);
+
+            if(Directory.Exists(programFolderPath) == false)
+            {
+                Directory.CreateDirectory(programFolderPath);
+            }   
+
             string filePath = Path.Combine(programFolderPath, "ZendureConfig.dat");
 
 
@@ -76,6 +82,9 @@ namespace ZendureShellShared
                     creds.AccountName = credentials.AccountName;
                     creds.Password = credentials.Password;
                     creds.BearerToken = credentials.BearerToken;
+                    creds.IotUrl = credentials.IotUrl;
+                    creds.IotUsername = credentials.IotUsername;
+                    creds.IotPassword = credentials.IotPassword;
                     
                     col.Update(creds);
                    

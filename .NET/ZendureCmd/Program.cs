@@ -211,7 +211,7 @@ namespace ZendureCmd
 
                             ZendureMqttClientProd zendureMqttClientProd = new ZendureMqttClientProd();
                             zendureMqttClientProd.Publish(topic, JsonConvert.SerializeObject(zendureMqttProperties));
-
+                            Console.WriteLine(JsonConvert.SerializeObject(zendureMqttProperties));
                             zendureMqttClientProd.Disconnect();
                         }
                         catch(Exception ex)

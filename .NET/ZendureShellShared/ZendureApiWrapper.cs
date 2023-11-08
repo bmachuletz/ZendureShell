@@ -77,7 +77,7 @@ namespace ZendureShellShared
             return x;
         }
 
-        public async Task<IZendureResponse> GetDeviceList()
+        public async Task<IZendureResponse> GetDeviceList(bool printDebug = false)
         {
             if (developerMode == true)
             {
@@ -89,11 +89,18 @@ namespace ZendureShellShared
                 Console.WriteLine(ZendureStatics.AUTH_HEADER["Blade-Auth"]);
                 throw new Exception("Not logged in");
             }
-          //  await GetResponse(HttpMethod.Post, ZendureStatics.APP_AUTH_URL);
-            return await GetResponse(HttpMethod.Post, ZendureStatics.APP_DEVICELIST_URL);
+
+            var response = await GetResponse(HttpMethod.Post, ZendureStatics.APP_DEVICELIST_URL);
+
+            if (printDebug == true)
+            {
+                Console.WriteLine(response.DataToJson());
+            }
+     
+            return response;
         }
 
-        public async Task<IZendureResponse> GetDeviceDetails(string deviceId)
+        public async Task<IZendureResponse> GetDeviceDetails(string deviceId, bool printDebug = false)
         {
             if (developerMode == true)
             {
@@ -106,7 +113,14 @@ namespace ZendureShellShared
             }
             ZendureStatics.DEVICE_DETAIL_BODY["deviceId"] = deviceId;
             
-            return await GetResponse(HttpMethod.Post, ZendureStatics.APP_DETAILS_URL);
+            var response = await GetResponse(HttpMethod.Post, ZendureStatics.APP_DETAILS_URL);
+
+            if (printDebug == true)
+            {
+                Console.WriteLine(response.DataToJson());
+            }
+
+            return response;
         }
 
         public async Task<IZendureResponse> GetDeveloperToken()

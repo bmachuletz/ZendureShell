@@ -4,6 +4,8 @@ namespace ZendureShellShared
 {
     public class ZendureMqttClientDev : ZendureMqttClient
     {
+        private string _serialNumber = string.Empty;
+        private string _username = string.Empty;
 
         public ZendureMqttClientDev(ref IZendureMqttClient zendureMqttClient) : base(ZendureMqttClientVariant.DEVELOPER_MQTT)
         {

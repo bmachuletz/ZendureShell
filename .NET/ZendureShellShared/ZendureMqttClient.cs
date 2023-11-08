@@ -26,22 +26,19 @@ namespace ZendureShellShared
         private ZendureMqttClientVariant zendureMqttClientVariant;
         public ZendureMqttClientVariant ZendureMqttClientVariant { get => zendureMqttClientVariant; }
 
-        private string appKey;
-        private List<string> deviceKey;
-        public string AppKey { get => appKey; }
-        public List<string> DeviceKeys { get => deviceKey; }
+        //private string appKey;
+        //private List<string> deviceKey;
+        //public string AppKey { get => appKey; }
+        //public List<string> DeviceKeys { get => deviceKey; }
 
-        public string _serialNumber = string.Empty;
-        public string _username = string.Empty;
+        /*
         public string _password = string.Empty;
-        public string _authToken = string.Empty;
+        */
 
         public ZendureMqttClient(ZendureMqttClientVariant zendureMqttClientVariant)
         {
             zendureCredentials = new ZendureCredentials();
             zendureCredentials.Fill().Wait();
-
-            _authToken    = zendureCredentials.BearerToken.Replace("bearer ", string.Empty);
 
             this.zendureMqttClientVariant = zendureMqttClientVariant;
             managedMqttClient = new MqttFactory().CreateMqttClient() as MQTTnet.Client.MqttClient;

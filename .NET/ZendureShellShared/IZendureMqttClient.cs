@@ -11,8 +11,8 @@ namespace ZendureShellShared
         public event EventHandler<ZendureMqttMessageArrivedEventArgs> MessageArrived;
         public ZendureMqttClientVariant ZendureMqttClientVariant { get; }
 
-        public string AppKey { get; }
-        public List<string> DeviceKeys { get; }
+     //   public string AppKey { get; }
+     //   public List<string> DeviceKeys { get; }
 
         public void Connect();
         public void Disconnect();
