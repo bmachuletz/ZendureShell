@@ -24,7 +24,7 @@ ZendureCmd.exe --getDeviceDetails <DeviceIdSolarflowHub or DeviceIdShell3EmPro>
 ```
 ## Details zu den Akkus abfragen
 ```console
-ZendureCmd.exe --getBatteryDetails <DeviceIdSolarflowHub>
+ZendureCmd.exe --getBatteryDetails <DeviceIdBattery>
 ```
 ## Deverloper MQTT-Accountinformationen abrufen
 ```console
